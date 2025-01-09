@@ -1,0 +1,154 @@
+CREATE DATABASE COURSEWORK_db;
+CREATE TABLE geographical_location (
+    Location_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Village VARCHAR(100),
+    Parish VARCHAR(100),
+    Sub_County VARCHAR(100),
+    County VARCHAR(100),
+    Region VARCHAR(100),
+    Population INT,
+    Coordinates VARCHAR(100),
+    Malaria_Risk_Level VARCHAR(50),
+    Health_Facilities_Count INT,
+    ITN_Coverage DECIMAL(5, 2),
+    Reported_Cases INT
+);
+
+CREATE TABLE patient_data (
+    Patient_ID INT PRIMARY KEY AUTO_INCREMENT,
+    First_Name VARCHAR(50),
+    Last_Name VARCHAR(50),
+    Date_of_Birth DATE,
+    Gender VARCHAR(10),
+    Phone_Number VARCHAR(15),
+    Next_of_Kin VARCHAR(50),
+    Location_ID INT,
+    Date_Added DATE,
+    FOREIGN KEY (Location_ID) REFERENCES geographical_location(Location_ID)
+);
+
+CREATE TABLE visit_record (
+    Visit_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Patient_ID INT,
+    Facility_ID INT,
+    Visit_Date DATE,
+    FOREIGN KEY (Patient_ID) REFERENCES patient_data(Patient_ID),
+    FOREIGN KEY (Facility_ID) REFERENCES health_facility(Facility_ID)
+);
+
+CREATE TABLE epidemiological_data (
+    Data_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Location_ID INT,
+    Recorded_Date DATE,
+    Cases_Per_Thousand_People INT,
+	ITN VARCHAR(50),
+    Average_Temperature DECIMAL(5, 2),
+    Update_Date DATE,
+    FOREIGN KEY (Location_ID) REFERENCES geographical_location(Location_ID)
+);
+CREATE TABLE health_facility (
+    Facility_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Facility_Name VARCHAR(100),
+    Location_ID INT,
+    Facility_Type INT,
+    Capacity INT,
+    Contact_Details VARCHAR(50),
+    FOREIGN KEY (Location_ID) REFERENCES geographical_location(Location_ID),
+    FOREIGN KEY (Facility_Type) REFERENCES facility_type(Facility_Type_ID)
+);
+
+CREATE TABLE facility_type (
+    Facility_Type_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Type_Name VARCHAR(50),
+    Description TEXT,
+    Date_Added DATE,
+    Date_Updated DATE
+);
+
+
+CREATE TABLE malaria_cases (
+    Case_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Patient_ID INT,
+    Type_of_Malaria VARCHAR(50),
+    Treatment_ID INT,
+    Outcome_ID INT,
+    FOREIGN KEY (Patient_ID) REFERENCES patient_data(Patient_ID),
+    FOREIGN KEY (Treatment_ID) REFERENCES treatment(Treatment_ID),
+    FOREIGN KEY (Outcome_ID) REFERENCES treatment_outcome(Outcome_ID)
+);
+
+CREATE TABLE treatment (
+    Treatment_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Treatment_Name VARCHAR(50),
+    Treatment_Description TEXT,
+    Dosage VARCHAR(50),
+    Side_Effects TEXT,
+    Date_Added DATE
+);
+
+CREATE TABLE treatment_outcome (
+    Outcome_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Outcome_Name VARCHAR(50),
+    Outcome_Description TEXT,
+    Outcome_Date DATE,
+    Added_By INT,
+    Update_Date DATE
+);
+
+CREATE TABLE laboratory_tests (
+    Test_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Patient_ID INT,
+    Facility_ID INT,
+    Test_Type VARCHAR(50),
+    Test_Result VARCHAR(50),
+    Test_Date DATE,
+    Technician_ID INT,
+    FOREIGN KEY (Patient_ID) REFERENCES patient_data(Patient_ID),
+    FOREIGN KEY (Facility_ID) REFERENCES health_facility(Facility_ID)
+);
+
+CREATE TABLE supply_chain (
+    Supply_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Resource_ID INT,
+    Facility_ID INT,
+    Quantity_Shipped INT,
+    Shipment_Date DATE,
+    Expected_Arrival_Date DATE,
+    Shipped_By INT,
+    Status VARCHAR(50),
+    Update_Date DATE,
+    FOREIGN KEY (Facility_ID) REFERENCES health_facility(Facility_ID)
+);
+
+CREATE TABLE resource (
+    Resource_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Resource_Name VARCHAR(50),
+    Quantity INT,
+    Facility_ID INT,
+    Date_Added DATE,
+    FOREIGN KEY (Facility_ID) REFERENCES health_facility(Facility_ID)
+);
+
+
+CREATE TABLE user (
+    User_ID INT PRIMARY KEY AUTO_INCREMENT,
+    First_Name VARCHAR(50),
+    Last_Name VARCHAR(50),
+    Preferred_Name VARCHAR(50),
+    Role_ID INT,
+    Password VARCHAR(100),
+    Facility_ID INT,
+    FOREIGN KEY (Role_ID) REFERENCES user_role(Role_ID),
+    FOREIGN KEY (Facility_ID) REFERENCES health_facility(Facility_ID)
+);
+
+
+CREATE TABLE user_role (
+    Role_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Role_Name VARCHAR(50),
+    Role_Description TEXT,
+    Date_Added DATE,
+    Update_Date DATE
+);
+
+
